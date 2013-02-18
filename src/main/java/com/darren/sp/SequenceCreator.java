@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Create sequences and pushes it into the Queue
  */
-public class SequenceCreator<T> {
+class SequenceCreator<T> {
     private BlockingQueue<List<T>> queue;
     private List<T> nodes;
 
@@ -20,7 +20,7 @@ public class SequenceCreator<T> {
     /**
      * Start creating sequences and pushed it to the queue
      */
-    public void start() {
+    void start() {
         new Thread(new Runnable() {
             public void run() {
                 try {
