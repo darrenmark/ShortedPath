@@ -23,6 +23,14 @@ public class Point implements Node<Point> {
         return (long) sqrt( pow(x - other.x, 2) + pow(y - other.y, 2));
     }
 
+    public long getX() {
+        return x;
+    }
+
+    public long getY() {
+        return y;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
