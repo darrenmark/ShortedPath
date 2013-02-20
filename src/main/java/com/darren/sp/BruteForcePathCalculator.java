@@ -15,10 +15,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This is not thread safe
  */
 public class BruteForcePathCalculator<T extends Node<T>> implements PathCalculator<T> {
+    private ThreadFactory threadFactory;
+
+    public BruteForcePathCalculator(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
+    }
 
     public List<T> shortestPathSequence(T start, List<T> nodes) {
         BlockingQueue<List<T>> queue = new ArrayBlockingQueue<List<T>>(1);
-        new SequenceCreator<T>(queue, nodes).start();
+        new SequenceCreator<T>(threadFactory, queue, nodes).start();
         ShortedDistance<T> shortedDistance = new ShortedDistance<T>(start, nodes);
         int count = 0, totalCombinations = getFactorial(nodes.size());
         while(count++ < totalCombinations) {

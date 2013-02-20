@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.BlockingQueue;
 
+
 /**
  * Create sequences and pushes it into the Queue
  */
 class SequenceCreator<T> {
+    private ThreadFactory threadFactory;
     private BlockingQueue<List<T>> queue;
     private List<T> nodes;
 
-    public SequenceCreator(BlockingQueue<List<T>> queue, final List<T> nodes) {
+    public SequenceCreator(ThreadFactory threadFactory, BlockingQueue<List<T>> queue, final List<T> nodes) {
+        this.threadFactory = threadFactory;
         this.queue = queue;
         this.nodes = nodes;
     }
@@ -21,31 +24,31 @@ class SequenceCreator<T> {
      * Start creating sequences and pushed it to the queue
      */
     void start() {
-        new Thread(new Runnable() {
+        threadFactory.createBackgroundThread(new Runnable() {
             public void run() {
                 try {
                     createSequence(nodes);
                 } catch (InterruptedException ex) {
-                   throw new RuntimeException(ex);
+                    throw new RuntimeException(ex);
                 }
             }
         }).start();
     }
 
-    private void createSequence(List<T> nodes) throws InterruptedException{
-        for(T node: nodes) {
+    private void createSequence(List<T> nodes) throws InterruptedException {
+        for (T node : nodes) {
             List<T> remainingNodes = new ArrayList<T>(nodes);
             remainingNodes.remove(node);
-            createSequence(new Stack<T>(), node,  remainingNodes);
+            createSequence(new Stack<T>(), node, remainingNodes);
         }
     }
 
     private void createSequence(Stack<T> stack, T node, List<T> nodes) throws InterruptedException {
         stack.push(node);
-        if(nodes.size() == 0) {
+        if (nodes.size() == 0) {
             queue.put(new ArrayList<T>(stack.subList(0, stack.size())));
         }
-        for(T first: nodes) {
+        for (T first : nodes) {
             List<T> remainingNodes = new ArrayList<T>(nodes);
             remainingNodes.remove(first);
             createSequence(stack, first, remainingNodes);

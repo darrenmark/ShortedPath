@@ -16,7 +16,7 @@ public class BruteForcePathCalculatorTest {
 
     @Test
     public void test() throws InterruptedException{
-        BruteForcePathCalculator<Point> calculator = new BruteForcePathCalculator<Point>();
+        BruteForcePathCalculator<Point> calculator = new BruteForcePathCalculator<Point>(new MyThreadFactory());
         //List<Point> path = calculator.shortestPathSequence(new Point(0, 0), Arrays.<Point>asList(new Point(25, 25), new Point(60, 60), new Point(70, 70), new Point(80, 80), new Point(50, 50), new Point(10, 10), new Point(5,5), new Point(2,3),new Point(45, 45)));
         List<Point> path = calculator.shortestPathSequence(new Point(0, 0), Arrays.<Point>asList(new Point(70, 70),new Point(25, 25), new Point(60, 60)));
         assertThat(path.size(),is(equalTo(4)));
@@ -24,6 +24,12 @@ public class BruteForcePathCalculatorTest {
         assertThat(path.get(1),is(equalTo(new Point(25, 25))));
         assertThat(path.get(2),is(equalTo(new Point(60, 60))));
         assertThat(path.get(3),is(equalTo(new Point(70, 70))));
+    }
+
+    private class MyThreadFactory implements ThreadFactory  {
+        public Thread createBackgroundThread(Runnable runnable) {
+            return new Thread(runnable);
+        }
     }
 
 }
