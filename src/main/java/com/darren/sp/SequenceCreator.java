@@ -4,38 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
  * Create sequences and pushes it into the Queue
  */
-class SequenceCreator<T> {
-    private ThreadFactory threadFactory;
-    private BlockingQueue<List<T>> queue;
+class SequenceCreator<T extends Node<T>> {
+    private BruteForcePathCalculator<T> bruteForcePathCalculator;
     private List<T> nodes;
 
-    public SequenceCreator(ThreadFactory threadFactory, BlockingQueue<List<T>> queue, final List<T> nodes) {
-        this.threadFactory = threadFactory;
-        this.queue = queue;
-        this.nodes = nodes;
+    public SequenceCreator(BruteForcePathCalculator<T> bruteForcePathCalculator, final List<T> nodes) {
+        this.bruteForcePathCalculator = bruteForcePathCalculator;
+        this.nodes = checkNotNull(nodes);
     }
 
     /**
      * Start creating sequences and pushed it to the queue
      */
     void start() {
-        threadFactory.createBackgroundThread(new Runnable() {
-            public void run() {
-                try {
-                    createSequence(nodes);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }).start();
+        createSequence(nodes);
     }
 
-    private void createSequence(List<T> nodes) throws InterruptedException {
+    private void createSequence(List<T> nodes){
         for (T node : nodes) {
             List<T> remainingNodes = new ArrayList<T>(nodes);
             remainingNodes.remove(node);
@@ -43,10 +36,10 @@ class SequenceCreator<T> {
         }
     }
 
-    private void createSequence(Stack<T> stack, T node, List<T> nodes) throws InterruptedException {
+    private void createSequence(Stack<T> stack, T node, List<T> nodes) {
         stack.push(node);
         if (nodes.size() == 0) {
-            queue.put(new ArrayList<T>(stack.subList(0, stack.size())));
+            bruteForcePathCalculator.setShortedDistance(new ArrayList<T>(stack.subList(0, stack.size())));
         }
         for (T first : nodes) {
             List<T> remainingNodes = new ArrayList<T>(nodes);
