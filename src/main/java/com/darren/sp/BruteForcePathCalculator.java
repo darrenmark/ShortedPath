@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * This is not thread safe
  */
-public class BruteForcePathCalculator<T extends Node<T>> implements PathCalculator<T> {
+class BruteForcePathCalculator<T extends Node<T>> implements PathCalculator<T> {
     private ShortedDistance<T> shortedDistance;
     private T start;
 
@@ -51,6 +51,7 @@ public class BruteForcePathCalculator<T extends Node<T>> implements PathCalculat
                 distance += currentNode.getDistance(node);
                 currentNode = node;
             }
+            distance += currentNode.getDistance(startNode);
         }
 
         List<T> getPath() {
